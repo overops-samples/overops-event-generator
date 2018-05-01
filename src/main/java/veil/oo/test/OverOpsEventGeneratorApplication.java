@@ -5,8 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.web.WebApplicationInitializer;
 import veil.oo.test.controller.Controller;
 import veil.oo.test.domain.User;
 import veil.oo.test.domain.UserRepository;
@@ -16,11 +19,16 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 @SpringBootApplication
-public class OverOpsEventGeneratorApplication {
+public class OverOpsEventGeneratorApplication extends SpringBootServletInitializer implements WebApplicationInitializer {
 
     private static final Logger log = LoggerFactory.getLogger(OverOpsEventGeneratorApplication.class);
 
     private static final int STARTUP_SLEEP = 10000;
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(OverOpsEventGeneratorApplication.class);
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(OverOpsEventGeneratorApplication.class, args);
