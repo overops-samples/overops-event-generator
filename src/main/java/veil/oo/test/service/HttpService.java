@@ -21,7 +21,7 @@ public class HttpService {
         if (generateEvent) {
             RestTemplate restTemplate = new RestTemplate();
 
-            ResponseEntity<String> entity = restTemplate.getForEntity("http://0.0.0.0:8080/throw500", String.class);
+            ResponseEntity<String> entity = restTemplate.getForEntity("http://localhost:8080/throw500", String.class);
 
             log.debug("HTTP get returned this value {}", entity.getBody());
         }
@@ -34,7 +34,7 @@ public class HttpService {
         if (generateEvent) {
             RestTemplate restTemplate = new RestTemplate();
 
-            restTemplate.getForEntity("http://0.0.0.0:8080/throw404", String.class);
+            restTemplate.getForEntity("http://localhost:8080/throw404", String.class);
 
         }
     }
