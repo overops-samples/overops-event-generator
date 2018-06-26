@@ -49,7 +49,7 @@ public class Controller {
         this.httpService = httpService;
     }
 
-    public void route(long counter, User user) throws BusinessException {
+    public boolean route(long counter, User user)  {
 
         log.trace("counter is {}", counter);
 
@@ -69,7 +69,11 @@ public class Controller {
 
         if (scenario == 1) {
 
-            bubbleService.bubbleException(user, generateEvent);
+            try {
+                bubbleService.bubbleException(user, generateEvent);
+            } catch (BusinessException e) {
+                log.error("exception was bubbled to controller and caught: " + e.getMessage(), e);
+            }
 
         } else if (scenario == 2) {
 
@@ -109,13 +113,8 @@ public class Controller {
 
         }
 
-        if (counter == 0 || counter % 10 != 0) {
-            try {
-                veryBrokenService.execute(user, true);
-            } catch (UnsupportedOperationException e) {
-                // need to investigate why this method always fails
-            }
-        }
+        return generateEvent;
+
 
     }
 

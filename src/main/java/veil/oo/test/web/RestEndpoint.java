@@ -2,40 +2,55 @@ package veil.oo.test.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Controller
+@RestController
 public class RestEndpoint {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @GetMapping("/throw500")
-    public String throw500(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(path = "/throw500", method = RequestMethod.GET)
+    public String throw500(@RequestParam(value = "generateEvent") boolean generateEvent, HttpServletRequest request, HttpServletResponse response) {
 
-        try {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "an error 500 occurred in the webservice");
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
+        if (generateEvent) {
+
+            try {
+
+                log.debug("going to call response.sendError() with {}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "an error 500 occurred in the webservice");
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
+
         }
 
-        return "I threw an error";
+        return "no 500 thrown this time";
     }
 
-    @GetMapping("/throw404")
-    public String throw404(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(path = "/throw404", method = RequestMethod.GET)
+    public String throw404(@RequestParam(value = "generateEvent") boolean generateEvent, HttpServletRequest request, HttpServletResponse response) {
 
-        try {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "a 404 occurred");
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
+        if (generateEvent) {
+            try {
+
+                log.debug("going to call response.sendError() with {}", HttpServletResponse.SC_NOT_FOUND);
+
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "a 404 occurred");
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
+
         }
 
-        return "i was not found";
+        return "no 404 thrown this time";
     }
 
 

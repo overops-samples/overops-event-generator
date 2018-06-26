@@ -25,7 +25,7 @@ public class BubbleService {
 
             */
 
-            throw new BusinessException("this exception should be handled elsewhere.");
+            throw new BusinessException("this exception is thrown in one method and expected to be handled in another.");
         }
     }
 
