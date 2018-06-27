@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,12 +13,15 @@ import java.io.IOException;
 @RestController
 public class RestEndpoint {
 
+    public static final String GENERATE_EVENT = "generateEvent";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @RequestMapping(path = "/throw500", method = RequestMethod.GET)
-    public String throw500(@RequestParam(value = "generateEvent") boolean generateEvent, HttpServletRequest request, HttpServletResponse response) {
+    public String throw500(HttpServletRequest request, HttpServletResponse response) {
 
-        if (generateEvent) {
+        String generateEvent = request.getParameter(GENERATE_EVENT);
+
+        if (generateEvent != null && generateEvent.equalsIgnoreCase(Boolean.TRUE.toString())) {
 
             try {
 
@@ -36,9 +38,11 @@ public class RestEndpoint {
     }
 
     @RequestMapping(path = "/throw404", method = RequestMethod.GET)
-    public String throw404(@RequestParam(value = "generateEvent") boolean generateEvent, HttpServletRequest request, HttpServletResponse response) {
+    public String throw404(HttpServletRequest request, HttpServletResponse response) {
 
-        if (generateEvent) {
+        String generateEvent = request.getParameter(GENERATE_EVENT);
+
+        if (generateEvent != null && generateEvent.equalsIgnoreCase(Boolean.TRUE.toString())) {
             try {
 
                 log.debug("going to call response.sendError() with {}", HttpServletResponse.SC_NOT_FOUND);

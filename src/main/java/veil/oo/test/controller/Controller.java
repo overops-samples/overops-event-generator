@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import veil.oo.test.domain.User;
-import veil.oo.test.error.BusinessException;
 import veil.oo.test.service.*;
 
 import java.util.Random;
@@ -17,17 +16,17 @@ public class Controller {
 
     private final Random rand = new Random();
 
-    private final BubbleService bubbleService;
+    private final CatchAndProcessService catchAndProcessService;
 
     private final CatchAndIgnoreService catchAndIgnoreService;
 
-    private final CatchAndLogService catchAndLogService;
+    private final LoggedErrorService loggedErrorService;
 
     private final CustomEventService customEventService;
 
     private final SlowService slowService;
 
-    private final WarningService warningService;
+    private final LoggedWarnService loggedWarnService;
 
     private final VeryBrokenService veryBrokenService;
 
@@ -37,19 +36,19 @@ public class Controller {
 
 
     @Autowired
-    public Controller(BubbleService bubbleService, CatchAndIgnoreService catchAndIgnoreService, CatchAndLogService catchAndLogService, CustomEventService customEventService, SlowService slowService, WarningService warningService, VeryBrokenService veryBrokenService, UncaughtExceptionService uncaughtExceptionService, HttpService httpService) {
-        this.bubbleService = bubbleService;
+    public Controller(CatchAndProcessService catchAndProcessService, CatchAndIgnoreService catchAndIgnoreService, LoggedErrorService loggedErrorService, CustomEventService customEventService, SlowService slowService, LoggedWarnService loggedWarnService, VeryBrokenService veryBrokenService, UncaughtExceptionService uncaughtExceptionService, HttpService httpService) {
+        this.catchAndProcessService = catchAndProcessService;
         this.catchAndIgnoreService = catchAndIgnoreService;
-        this.catchAndLogService = catchAndLogService;
+        this.loggedErrorService = loggedErrorService;
         this.customEventService = customEventService;
         this.slowService = slowService;
-        this.warningService = warningService;
+        this.loggedWarnService = loggedWarnService;
         this.veryBrokenService = veryBrokenService;
         this.uncaughtExceptionService = uncaughtExceptionService;
         this.httpService = httpService;
     }
 
-    public boolean route(long counter, User user)  {
+    public boolean route(long counter, User user) {
 
         log.trace("counter is {}", counter);
 
@@ -69,11 +68,7 @@ public class Controller {
 
         if (scenario == 1) {
 
-            try {
-                bubbleService.bubbleException(user, generateEvent);
-            } catch (BusinessException e) {
-                log.error("exception was bubbled to controller and caught: " + e.getMessage(), e);
-            }
+            catchAndProcessService.handleException(user, generateEvent);
 
         } else if (scenario == 2) {
 
@@ -81,7 +76,7 @@ public class Controller {
 
         } else if (scenario == 3) {
 
-            warningService.warningsAbound(user, generateEvent);
+            loggedWarnService.warningsAbound(user, generateEvent);
 
         } else if (scenario == 4) {
 
@@ -93,7 +88,7 @@ public class Controller {
 
         } else if (scenario == 6) {
 
-            catchAndLogService.catchAndLog(user, generateEvent);
+            loggedErrorService.errorsAbound(user, generateEvent);
 
         } else if (scenario == 7) {
 

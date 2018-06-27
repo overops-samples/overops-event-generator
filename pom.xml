@@ -5,7 +5,7 @@
 
     <groupId>veil.oo</groupId>
     <artifactId>overops-event-generator</artifactId>
-    <version>0.0.5-SENTRY-SNAPSHOT</version>
+    <version>1.0.0.SENTRY</version>
     <packaging>jar</packaging>
 
     <name>OverOps Event Generator</name>
@@ -73,13 +73,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-        </dependency>
-
-        <!-- sentry -->
-        <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry-logback</artifactId>
-            <version>1.7.5</version>
         </dependency>
 
     </dependencies>

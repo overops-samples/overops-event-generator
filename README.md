@@ -11,6 +11,11 @@ start the application and enjoy...
 ```
 java -agentlib:TakipiAgent -jar overops-event-generator-0.0.1-SNAPSHOT.jar
 ```
+or 
+
+```
+nohup java -agentlib:TakipiAgent -jar overops-event-generator-0.0.1-SNAPSHOT.jar &
+```
 
 See https://bintray.com/takipi/maven/takipi-sdk for details on downloading Takipi SDK
 

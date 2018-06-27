@@ -7,7 +7,7 @@ import veil.oo.test.domain.User;
 import veil.oo.test.utils.TakipiAverageExecutionTime;
 
 @Service
-public class WarningService {
+public class LoggedWarnService {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -26,7 +26,7 @@ public class WarningService {
 
              */
 
-            log.warn("warning!!!! - this number is not what i thought it would be and so was logged");
+            log.warn("log.warn() called!");
         }
     }
 }

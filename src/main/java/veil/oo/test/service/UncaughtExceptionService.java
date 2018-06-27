@@ -15,11 +15,12 @@ public class UncaughtExceptionService {
 
     public void cantCatchMe(User demoUser, boolean generateEvent) {
 
-        if (generateEvent) {
 
-            Executors.newSingleThreadExecutor().execute(() -> {
+        Executors.newSingleThreadExecutor().execute(() -> {
 
-                log.trace("user details: {}", demoUser.toString());
+            log.trace("user details: {}", demoUser.toString());
+
+            if (generateEvent) {
 
                 log.debug("about to do something very dangerous and unpredictable.");
 
@@ -32,7 +33,10 @@ public class UncaughtExceptionService {
                 */
 
                 throw new UncaughtException("this exception is uncaught and a BIG potential problem");
-            });
-        }
+            }
+
+            log.debug("no uncaught exception generated this time :)");
+        });
     }
+
 }
