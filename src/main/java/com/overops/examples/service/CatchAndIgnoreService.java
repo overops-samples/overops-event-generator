@@ -13,7 +13,7 @@ public class CatchAndIgnoreService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @TakipiInvocationCounter
-    public void catchAndIgnore(User demoUser, boolean generateEvent) {
+    public String catchAndIgnore(User demoUser, boolean generateEvent) {
 
         log.trace("user details: {}", demoUser.toString());
 
@@ -36,5 +36,7 @@ public class CatchAndIgnoreService {
                 // i'll just bury this one
             }
         }
+        
+        return demoUser.toString();
     }
 }
