@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.overops.examples.error.UncaughtException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -56,6 +58,18 @@ public class RestEndpoint {
 
         return "no 404 thrown this time";
     }
+    
+    @RequestMapping(path = "/uncaught", method = RequestMethod.GET)
+    public String uncaught(HttpServletRequest request, HttpServletResponse response) {
 
+        String generateEvent = request.getParameter(GENERATE_EVENT);
 
+        if (generateEvent != null && generateEvent.equalsIgnoreCase(Boolean.TRUE.toString())) {
+            log.debug("going to throw uncaught");
+            
+            throw new RuntimeException("Uncaught");
+        }
+
+        return "no 404 thrown this time";
+    }
 }
