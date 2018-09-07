@@ -14,8 +14,6 @@ public class UncaughtExceptionService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public void cantCatchMe(User demoUser, boolean generateEvent) {
-
-
         Executors.newSingleThreadExecutor().execute(() -> {
 
             log.trace("user details: {}", demoUser.toString());

@@ -1,8 +1,9 @@
 package com.overops.examples.error;
 
 public class UncaughtException extends RuntimeException {
+	private static final long serialVersionUID = 6415803589972729150L;
 
-    public UncaughtException() {
+	public UncaughtException() {
     }
 
     public UncaughtException(String message) {
