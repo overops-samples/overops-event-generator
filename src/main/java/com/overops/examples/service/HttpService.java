@@ -1,6 +1,5 @@
 package com.overops.examples.service;
 
-import com.overops.examples.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.overops.examples.domain.User;
+
+import io.sentry.overops.examples.utils.SentryUtil;
 
 
 @Service
@@ -35,7 +38,7 @@ public class HttpService {
             log.debug("GET call to [{}] returned this value: {}", url, entity.getBody());
 
         } catch (RestClientException e) {
-
+            SentryUtil.capture(e);
             // log as debug because i don't want another logged error or warn
 
             log.debug(e.getMessage(), e);
@@ -62,7 +65,7 @@ public class HttpService {
             log.debug("GET call to [{}] returned this value: {}", url, entity.getBody());
 
         } catch (RestClientException e) {
-
+        	SentryUtil.capture(e);
             // log as debug because i don't want another logged error or warn
 
             log.debug(e.getMessage(), e);

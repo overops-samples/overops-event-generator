@@ -26,7 +26,7 @@ public class SlowService {
              */
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 log.error(e.getMessage(), e);
             }

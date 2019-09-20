@@ -22,6 +22,8 @@ public class RestEndpoint {
 
         String generateEvent = request.getParameter(GENERATE_EVENT);
 
+        Thread.currentThread().getStackTrace();
+        
         if (generateEvent != null && generateEvent.equalsIgnoreCase(Boolean.TRUE.toString())) {
 
             try {

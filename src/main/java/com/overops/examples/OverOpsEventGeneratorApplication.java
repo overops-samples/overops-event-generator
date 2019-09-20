@@ -1,8 +1,9 @@
 package com.overops.examples;
 
-import com.overops.examples.domain.User;
-import com.overops.examples.domain.UserRepository;
-import com.takipi.sdk.v1.api.Takipi;
+import java.time.LocalDate;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
@@ -12,13 +13,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import com.overops.examples.controller.Controller;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.time.LocalDate;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicLong;
+import com.overops.examples.controller.Controller;
+import com.overops.examples.domain.User;
+import com.overops.examples.domain.UserRepository;
+import com.takipi.sdk.v1.api.Takipi;
+
+import io.sentry.overops.examples.utils.SentryUtil;
 
 @SpringBootApplication
+@EnableAsync
 public class OverOpsEventGeneratorApplication {
 
     private static final Logger log = LoggerFactory.getLogger(OverOpsEventGeneratorApplication.class);
@@ -28,7 +36,17 @@ public class OverOpsEventGeneratorApplication {
     public static void main(String[] args) {
         SpringApplication.run(OverOpsEventGeneratorApplication.class, args);
     }
-
+    
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public TaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(25);
+        return executor;
+    }
+        
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public ApplicationRunner createUsers(UserRepository repository) {
@@ -61,15 +79,27 @@ public class OverOpsEventGeneratorApplication {
         return Takipi.create("OVEROPS_EVENT_GENERATOR");
     }
 
+    @Async("taskExecutor")
+    public void createUserWithConcurrentExecutor(){
+    	System.out.println("Currently Executing thread name - " + Thread.currentThread().getName());
+    	System.out.println("User created with concurrent task executor");
+    }
+    
     @Bean
     @Profile("!test")
     public ApplicationRunner generateErrors(UserRepository repository, Controller controller) {
         return (args) -> {
-
-            int userCount = (int) repository.count();
-
+            if (args.containsOption("oo.sentry")) {
+                boolean sentry = Boolean.parseBoolean(args.getOptionValues("oo.sentry").get(0));
+                
+                if (sentry) {
+                	SentryUtil.enable();
+                	log.info("Sentry enabled");
+                }
+            }
+            
             log.info("sleeping for {} ms before starting", STARTUP_SLEEP);
-
+            
             try {
                 Thread.sleep(STARTUP_SLEEP);
             } catch (InterruptedException e) {
@@ -79,19 +109,29 @@ public class OverOpsEventGeneratorApplication {
             log.info("waking up and ready to generate errors");
 
             long events = -1;
+            long invocations = -1;
 
             if (args.containsOption("oo.events")) {
                 events = Long.parseLong(args.getOptionValues("oo.events").get(0));
 
                 log.info("limiting number of events to {}", events);
             }
+            
+            if (args.containsOption("oo.invocations")) {
+                invocations = Long.parseLong(args.getOptionValues("oo.invocations").get(0));
 
+                log.info("limiting number of invocations to {}", invocations);
+            }
 
             AtomicLong invocationCounter = new AtomicLong(0);
             AtomicLong eventCounter = new AtomicLong(0);
-
-            while (events == -1 || eventCounter.get() < events) {
-
+            
+            int userCount = (int) repository.count();
+            
+            long start = System.currentTimeMillis();
+            
+            while ((events == -1 || eventCounter.get() < events) &&
+            	  ((invocations == -1 || invocationCounter.get() < invocations))) {
                 int randomUserId = ThreadLocalRandom.current().nextInt(1, userCount + 1);
 
                 repository.findById((long) randomUserId).ifPresent(user -> {
@@ -109,17 +149,19 @@ public class OverOpsEventGeneratorApplication {
                     }
 
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(5);
                     } catch (InterruptedException e) {
                         log.error(e.getMessage(), e);
                     }
                 });
 
                 invocationCounter.incrementAndGet();
-
             }
 
-            log.info("event generator finished!!!!  ran {} times and generated {} events.", invocationCounter.get(), eventCounter.get());
+            long end = System.currentTimeMillis();
+
+            log.info("EVENTS FINISHED!!!! ran for {} ms, {} times and generated {} events.",
+              (end-start), invocationCounter.get(), eventCounter.get());
         };
     }
 }

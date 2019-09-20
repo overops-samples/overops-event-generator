@@ -9,6 +9,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
+import com.overops.examples.domain.User;
+import com.overops.examples.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Random;
+
 @Component
 public class Controller {
 
@@ -33,7 +42,6 @@ public class Controller {
     private final UncaughtExceptionService uncaughtExceptionService;
 
     private final HttpService httpService;
-
 
     @Autowired
     public Controller(CatchAndProcessService catchAndProcessService, CatchAndIgnoreService catchAndIgnoreService, LoggedErrorService loggedErrorService, CustomEventService customEventService, SlowService slowService, LoggedWarnService loggedWarnService, VeryBrokenService veryBrokenService, UncaughtExceptionService uncaughtExceptionService, HttpService httpService) {
@@ -109,7 +117,6 @@ public class Controller {
         }
 
         return generateEvent;
-
 
     }
 

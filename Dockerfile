@@ -35,4 +35,6 @@ EXPOSE 8080
 # mount sources as volume
 VOLUME /sources
 
-ENTRYPOINT java -Dtakipi.sources.path=/sources -jar target/*.jar
+ADD libsentry_agent_linux-x86_64.so $PROJECT_DIR
+
+ENTRYPOINT java -agentpath:libsentry_agent_linux -Dtakipi.sources.path=/sources -jar target/*.jar
